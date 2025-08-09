@@ -42,7 +42,7 @@ export const chaosMiddleware = (options: ChaosOptions = {}) => {
 
         const errorRate = options.errorRate ?? 0; 
         if(Math.random() < errorRate) {
-            console.log("Injecting a 500 Internal Server Error")
+            console.log("[Chaos] Injecting a 500 Internal Server Error")
 
             res.status(500).end(); 
             return; 
@@ -57,7 +57,7 @@ export const chaosMiddleware = (options: ChaosOptions = {}) => {
                 latency_ms = options.latency
             }
 
-            console.log(`Delaying Response by ${latency_ms}ms...`); 
+            console.log(`[Chaos] Delaying Response by ${latency_ms}ms...`); 
             await delay(latency_ms); 
         }
         return next(); 
