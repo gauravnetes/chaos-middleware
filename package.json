@@ -1,6 +1,6 @@
 {
   "name": "@gauravnetes/chaos-middleware",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Node.js middleware to simulate network chaos with latency and errors for resilient development",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
