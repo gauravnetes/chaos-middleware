@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    /* Build Settings */
+    "target": "ES2020",                // Compile to a modern but compatible JavaScript version.
+    "module": "CommonJS",               // Use the standard module system for Node.js.
+    "outDir": "./dist",                 // Where to output the compiled JavaScript.
+    "rootDir": "./src",                 // Where our source TypeScript code lives.
+    
+    /* Type-Checking & Safety */
+    "strict": true,                     // Enable all strict type-checking options.
+    "esModuleInterop": true,            // Allows better interoperability between module systems.
+    "skipLibCheck": true,               // Skip type checking of declaration files.
+    "forceConsistentCasingInFileNames": true,
+
+    /* Library-Specific Settings */
+    "declaration": true               // VERY IMPORTANT: Generates .d.ts files.
+                                      // This is what gives users of your package TypeScript support.
+  },
+  "include": ["src"],                   // Only compile files in the 'src' directory.
+  "exclude": ["node_modules", "dist"]   // Exclude these directories.
+}
