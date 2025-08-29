@@ -9,7 +9,11 @@ Chaos Middleware solves this by making your development environment more closely
 Core Features
 - Latency Injection: Simulate slow network connections with fixed or variable delays.
 
-- Error Injection: Randomly return 500 errors to test your frontend's error-handling logic.
+- Customizable Error Injection: Randomly return specific HTTP errors (like 401 or 429) to test all your UI's error states.
+
+- Smarter Targeting: Apply chaos only to specific HTTP methods like POST or DELETE.
+
+- On-Demand Activation: Toggle chaos on and off with a simple URL query parameter—no server restarts needed!
 
 - Framework-Agnostic: Works seamlessly with Express, Next.js, and other compatible frameworks.
 
@@ -43,7 +47,7 @@ app.use(chaosMiddleware({
 }));
 
 app.get('/api/user', (req, res) => {
-  res.json({ name: 'Alex Doe', status: 'Fetched successfully!' });
+  res.json({ name: 'John Doe', status: 'Fetched successfully!' });
 });
 
 app.listen(3001, () => console.log('Server is running...'));
@@ -69,9 +73,8 @@ const runMiddleware = (req, res, fn) => {
     });
   });
 };
-```
 
-```typescript
+
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // Apply chaos just to this route
   await runMiddleware(req, res, chaosMiddleware({
@@ -86,15 +89,69 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 export default handler;
 ```
 
+
+Advanced Usage & Configuration
+Target specific scenarios by providing a configuration object to chaosMiddleware.
+
+
+1. Toggle Chaos On-Demand
+Avoid restarting your server. Use activationKeyword to turn chaos on and off from your browser.
+
+```javascript
+// Apply to all routes, but only when activated
+app.use('/', chaosMiddleware({
+  latency: [1000, 3000],
+  activationKeyword: 'chaos' // Use a short keyword you like!
+}));
+```
+
+- Chaos OFF: http://localhost:3000/api/data
+- Chaos ON: http://localhost:3000/api/data?chaos=true
+
+
+
+2. Target Specific HTTP Methods
+Test form submissions or deletions without slowing down GET requests.
+
+```javascript
+app.use('/api/posts', chaosMiddleware({
+  latency: [800, 1500],
+  // Only apply chaos to POST and DELETE requests on this route
+  methods: ['POST', 'DELETE']
+}));
+```
+
+
+
+3. Simulate Specific API Errors
+Test how your UI handles different error types, like an expired token (401) or a server overload (503).
+
+```javascript
+app.use('/api/profile', chaosMiddleware({
+  errorRate: 0.5, // Fail 50% of the time
+  error: {
+    status: 401,
+    body: { message: 'Your session has expired. Please log in again.' }
+  }
+}));
+```
+
+
+
 Configuration Options
 You can pass a configuration object to chaosMiddleware to control its behavior.
 
-| Option      | Type                      | Default     | Description                                                                                             |
-|-------------|---------------------------|-------------|---------------------------------------------------------------------------------------------------------|
-| `latency`   | `number` \| `[min, max]`  | `undefined` | The delay to add. Provide a single number for a fixed delay, or a `[min, max]` tuple for a variable one. |
-| `errorRate` | `number`                  | `0`         | A number between `0` (never fails) and `1` (always fails) representing the probability of an error.         |
+| Option              | Type                         | Default     | Description                                                                                              |
+|---------------------|------------------------------|-------------|----------------------------------------------------------------------------------------------------------|
+| `latency`           | `number` \| `[min, max]`     | `undefined` | The delay in ms. Provide a number for a fixed delay or a `[min, max]` tuple for a variable one.            |
+| `errorRate`         | `number`                     | `0`         | A number between `0` (never fails) and `1` (always fails) for the probability of an error.               |
+| `methods`           | `string[]`                   | `undefined` | Array of HTTP methods (`'GET'`, `'POST'`) to apply chaos to. If omitted, applies to all methods.         |
+| `error`             | `{ status, body }`           | `undefined` | A custom error object with a `status` (number) and optional `body` (JSON object). Defaults to `500`.      |
+| `activationKeyword` | `string`                     | `undefined` | If provided, chaos only runs when a URL query parameter of this name is set to `'true'`.                 |
 
 A number between 0 (never fails) and 1 (always fails) representing the probability of an error.
+
+
 
 License
 This project is licensed under the MIT License. See the LICENSE file for details.

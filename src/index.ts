@@ -4,10 +4,26 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 interface GenericResponse {
     status: (code: number) => GenericResponse; 
     end: () => void; 
+    json: (body: any) => void; 
 }
 
 type NextFunction = () => void; 
-type GenericRequest = {}; 
+interface GenericRequest {
+    method?: string; 
+    query?: Record<string, any> 
+}; 
+
+export interface ChaosError {
+    /**
+     * The HTTP status code to return.
+     * @default 500
+     */
+    status: number; 
+    /**
+     * An optional Error body to send with the JSON response. 
+     */
+    body: Record<string, any>
+}
 
 // interface of chaosOptions
 export interface ChaosOptions {
@@ -22,6 +38,21 @@ export interface ChaosOptions {
      * @default 0
      */
     errorRate?: number; 
+
+    error?: ChaosError; 
+
+    /**
+     * An Array of HTTP methods (e.g. 'GET', 'POST') to which chaos will
+     * be applied. If not provided, chaos is applied to all methods 
+     * @default undefined (all methods)
+     */
+    methods?: string[]; 
+
+    /**
+     * If provided, chaos will only be activated when a query parameter 
+     * with this name has a value of 'true' (e.g. ?chaos=true). 
+     */
+    activationKeyword?: string
 }
 
 
@@ -40,11 +71,35 @@ export const chaosMiddleware = (options: ChaosOptions = {}) => {
             return next(); 
         }
 
+        if(options.activationKeyword) {
+            if(!req.query || req.query[options.activationKeyword] !== 'true') 
+                return next(); 
+
+            console.log(`[CHAOS] activated by '${options.activationKeyword}=true' query parameter`)
+        }
+
+
+        if(options.methods && options.methods.length > 0) {
+            const reqMethod = req.method?.toUpperCase(); 
+            const allowedMethods = options.methods.map(m => m.toUpperCase()); 
+            if(!reqMethod || !allowedMethods.includes(reqMethod)) {
+                return next(); 
+            }
+        }
+
         const errorRate = options.errorRate ?? 0; 
         if(Math.random() < errorRate) {
+            const customError = options.error; 
+            const status = customError?.status || 500; 
+            const body = customError?.body; 
             console.log("[Chaos] Injecting a 500 Internal Server Error")
 
-            res.status(500).end(); 
+            res.status(status); 
+            if(body) 
+                res.json(body)
+            else 
+                res.end()
+
             return; 
         }
 
