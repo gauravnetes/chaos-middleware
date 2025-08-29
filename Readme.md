@@ -1,12 +1,13 @@
-Chaos Middleware 🌪️
+## Chaos Middleware 🌪️
+
 A simple yet powerful Node.js middleware for Express and Next.js that intentionally introduces chaos (latency and errors) into your API routes during development. Force yourself to build more resilient, user-friendly frontend applications.
 
-The Problem
+## The Problem
 When developing on localhost, our applications live in a perfect world with near-zero latency and 100% server reliability. This often leads to a "World Peace" that isn't prepared for the real world's unpredictable network conditions. In Result, UIs that feel frozen on slow connections or break completely when an API call fails.
 
 Chaos Middleware solves this by making your development environment more closely resemble the real world's imperfection.
 
-Core Features
+### Core Features
 - Latency Injection: Simulate slow network connections with fixed or variable delays.
 
 - Customizable Error Injection: Randomly return specific HTTP errors (like 401 or 429) to test all your UI's error states.
@@ -21,11 +22,9 @@ Core Features
 
 - Zero Dependencies: A lightweight tool that adds no bloat to your project.
 
-Installation
-```
-
+### Installation
+``` bash
 npm install @gauravnetes/chaos-middleware
-
 ```
 
 Quick Start & Usage
@@ -94,7 +93,7 @@ Advanced Usage & Configuration
 Target specific scenarios by providing a configuration object to chaosMiddleware.
 
 
-1. Toggle Chaos On-Demand
+### 1. Toggle Chaos On-Demand
 Avoid restarting your server. Use activationKeyword to turn chaos on and off from your browser.
 
 ```javascript
@@ -110,7 +109,7 @@ app.use('/', chaosMiddleware({
 
 
 
-2. Target Specific HTTP Methods
+### 2. Target Specific HTTP Methods
 Test form submissions or deletions without slowing down GET requests.
 
 ```javascript
@@ -123,7 +122,7 @@ app.use('/api/posts', chaosMiddleware({
 
 
 
-3. Simulate Specific API Errors
+### 3. Simulate Specific API Errors
 Test how your UI handles different error types, like an expired token (401) or a server overload (503).
 
 ```javascript
@@ -153,8 +152,8 @@ A number between 0 (never fails) and 1 (always fails) representing the probabili
 
 
 
-License
+📜 License
 This project is licensed under the MIT License. See the LICENSE file for details.
 
-Contributing
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
+🤝 Contributing
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/gauravnetes/chaos-middleware/issues) page.
